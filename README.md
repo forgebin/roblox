@@ -1,1 +1,2 @@
-# roblox
+# Disclaimer
+**The Roblox Luau scripts provided in this repository are intended solely for educational and research purposes. The author does not endorse or promote the use of these scripts for any malicious activities or in violation of Roblox's terms of service. Users are responsible for ensuring that their use of these scripts complies with all applicable laws and regulations. The author assumes no responsibility for any consequences arising from the use of the scripts.**
