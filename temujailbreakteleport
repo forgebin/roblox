@@ -1,0 +1,143 @@
+-- Temu Teleportation method for extremely shitty externals --
+
+local module = {}
+
+-- Generated using RoadToGlory's Converter v1.1 (RoadToGlory#9879)
+
+-- Instances:
+
+local Converted = {
+	["_ScreenGui"] = Instance.new("ScreenGui");
+	["_Frame"] = Instance.new("Frame");
+	["_TextLabel"] = Instance.new("TextLabel");
+}
+
+-- Properties:
+
+Converted["_ScreenGui"].IgnoreGuiInset = true
+Converted["_ScreenGui"].Enabled = false
+Converted["_ScreenGui"].ScreenInsets = Enum.ScreenInsets.DeviceSafeInsets
+Converted["_ScreenGui"].ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Converted["_ScreenGui"].Parent = game:GetService("CoreGui")
+
+Converted["_Frame"].BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Converted["_Frame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+Converted["_Frame"].BorderSizePixel = 0
+Converted["_Frame"].Size = UDim2.new(1, 0, 1, 0)
+Converted["_Frame"].Parent = Converted["_ScreenGui"]
+
+Converted["_TextLabel"].Font = Enum.Font.Unknown
+Converted["_TextLabel"].Text = "Fast Traveling..."
+Converted["_TextLabel"].TextColor3 = Color3.fromRGB(255, 255, 255)
+Converted["_TextLabel"].TextScaled = true
+Converted["_TextLabel"].TextSize = 14
+Converted["_TextLabel"].TextWrapped = true
+Converted["_TextLabel"].BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Converted["_TextLabel"].BackgroundTransparency = 1
+Converted["_TextLabel"].BorderColor3 = Color3.fromRGB(0, 0, 0)
+Converted["_TextLabel"].BorderSizePixel = 0
+Converted["_TextLabel"].Position = UDim2.new(0.221867517, 0, 0.354026854, 0)
+Converted["_TextLabel"].Size = UDim2.new(0.55546689, 0, 0.291946322, 0)
+Converted["_TextLabel"].Parent = Converted["_Frame"]
+
+local player = game:GetService("Players").LocalPlayer
+function module.GetClosestVehicle()
+	local candidate, distance = nil, math.huge;
+	for i, v in pairs(workspace:WaitForChild("Vehicles"):GetChildren()) do
+		if v.Name == "Camaro" and v:FindFirstChild("Engine") then
+			if (v:FindFirstChild("Engine").Position-player.Character.HumanoidRootPart.Position).Magnitude < distance then
+				distance = (v:FindFirstChild("Engine").Position-player.Character.HumanoidRootPart.Position).Magnitude
+				candidate = v;
+			end
+		end
+	end
+	return candidate
+end
+function module.Teleport(position)
+	Converted["_ScreenGui"].Enabled = true;
+	
+	local params = RaycastParams.new();
+	params.FilterDescendantsInstances = {player.Character, workspace.Vehicles}
+	params.RespectCanCollide = true;
+
+	if workspace:Raycast(player.Character.HumanoidRootPart.Position, Vector3.new(0,500,0), params) then
+		return "You are under something. We can't initiate."
+	end
+
+	local vehicle = module.GetClosestVehicle();
+	if vehicle then
+		
+		if vehicle.Seat.PlayerName.Value == player.Name then
+			vehicle.Engine.CFrame *= CFrame.new(0,500,0)
+			task.wait();
+			while (position*Vector3.new(1,0,1)-player.Character.HumanoidRootPart.Position*Vector3.new(1,0,1)).Magnitude > 8.14 do
+				local dt = task.wait();
+				vehicle.Engine.CFrame = vehicle.Engine.CFrame+(((position+Vector3.new(0,500,0))-vehicle.Engine.CFrame.Position).Unit*10)
+				vehicle.Engine.Velocity = Vector3.new(0,0.01,0)
+			end
+			local raycheck = workspace:Raycast(vehicle.Engine.Position, Vector3.new(0,-2000,0),params)
+			if raycheck then
+				vehicle.Engine.CFrame = CFrame.new(raycheck.Position+Vector3.new(0,7,0))
+			end
+			game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.E,false,game);
+			task.wait(0.1);
+			game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.E,false,game)
+			Converted["_ScreenGui"].Enabled = false;
+			return
+		end
+		
+		player.Character:MoveTo(player.Character.HumanoidRootPart.Position+Vector3.new(0,500,0))
+		local destination = vehicle.Engine.Position;
+		local finish = false;
+		if (vehicle.Engine.Position-player.Character.HumanoidRootPart.Position).Magnitude > (position-player.Character.HumanoidRootPart.Position).Magnitude then
+			destination = position;
+			finish = true
+		end
+
+		if finish == false then
+			while (vehicle.Engine.Position*Vector3.new(1,0,1)-player.Character.HumanoidRootPart.Position*Vector3.new(1,0,1)).Magnitude > 3.14 do
+				local dt = task.wait();
+				player.Character:MoveTo(player.Character.HumanoidRootPart.Position+((destination+Vector3.new(0,500,0))-player.Character.HumanoidRootPart.Position).Unit*3)
+				player.Character.HumanoidRootPart.Velocity = Vector3.new(0,0.01,0)
+			end
+			task.wait(1)
+			game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game);task.wait();
+			game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.Space,false,game)
+			
+			task.wait()
+			
+			player.Character:MoveTo(vehicle.Engine.Position+vehicle.Engine.CFrame.RightVector*-4)
+			task.wait()
+			workspace.CurrentCamera.CFrame = CFrame.lookAt(workspace.CurrentCamera.CFrame.Position, vehicle.Engine.Position)
+			for i = 1, 10 do
+				game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.E,false,game);
+				task.wait(0.1);
+				game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.E,false,game)
+				task.wait(0.5)
+				if vehicle.Seat.PlayerName.Value == player.Name then
+					break
+				end
+			end
+			if vehicle.Seat.PlayerName.Value == player.Name then
+				return module.Teleport(position)
+			else
+				Converted["_ScreenGui"].Enabled = false;
+			end
+		else
+			while (vehicle.Engine.Position*Vector3.new(1,0,1)-player.Character.HumanoidRootPart.Position*Vector3.new(1,0,1)).Magnitude > 3.14 do
+				local dt = task.wait();
+				player.Character:MoveTo(player.Character.HumanoidRootPart.Position+((destination+Vector3.new(0,500,0))-player.Character.HumanoidRootPart.Position).Unit*3)
+				player.Character.HumanoidRootPart.Velocity = Vector3.new(0,0.01,0)
+			end
+			task.wait(1)
+			game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game);task.wait();
+			game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.Space,false,game)
+
+			task.wait()
+
+			player.Character:MoveTo(destination)
+			Converted["_ScreenGui"].Enabled = false;
+		end
+	end
+end
+return module.Teleport
