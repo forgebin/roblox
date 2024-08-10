@@ -25,6 +25,7 @@ Converted["_Frame"].BorderColor3 = Color3.fromRGB(0, 0, 0)
 Converted["_Frame"].BorderSizePixel = 0
 Converted["_Frame"].Size = UDim2.new(1, 0, 1, 0)
 Converted["_Frame"].Parent = Converted["_ScreenGui"]
+Converted["_Frame"].BackgroundTransparency = 0.8
 
 Converted["_TextLabel"].Font = Enum.Font.Unknown
 Converted["_TextLabel"].Text = "Fast Traveling..."
