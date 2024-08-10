@@ -43,9 +43,18 @@ Converted["_TextLabel"].Parent = Converted["_Frame"]
 
 local player = game:GetService("Players").LocalPlayer
 function module.GetClosestVehicle()
+
+	local params = RaycastParams.new();
+	params.FilterDescendantsInstances = {player.Character, workspace.Vehicles}
+	params.RespectCanCollide = true;
+	
 	local candidate, distance = nil, math.huge;
 	for i, v in pairs(workspace:WaitForChild("Vehicles"):GetChildren()) do
 		if v.Name == "Camaro" and v:FindFirstChild("Engine") then
+			local raycheck = workspace:Raycast(v.Engine.Position, Vector3.new(0,500,0),params)
+			if raycheck then
+				continue
+			end
 			if (v:FindFirstChild("Engine").Position-player.Character.HumanoidRootPart.Position).Magnitude < distance then
 				distance = (v:FindFirstChild("Engine").Position-player.Character.HumanoidRootPart.Position).Magnitude
 				candidate = v;
@@ -56,7 +65,7 @@ function module.GetClosestVehicle()
 end
 function module.Teleport(position)
 	Converted["_ScreenGui"].Enabled = true;
-	
+
 	local params = RaycastParams.new();
 	params.FilterDescendantsInstances = {player.Character, workspace.Vehicles}
 	params.RespectCanCollide = true;
@@ -67,7 +76,7 @@ function module.Teleport(position)
 
 	local vehicle = module.GetClosestVehicle();
 	if vehicle then
-		
+
 		if vehicle.Seat.PlayerName.Value == player.Name then
 			vehicle.Engine.CFrame *= CFrame.new(0,500,0)
 			task.wait();
@@ -86,7 +95,7 @@ function module.Teleport(position)
 			Converted["_ScreenGui"].Enabled = false;
 			return
 		end
-		
+
 		player.Character:MoveTo(player.Character.HumanoidRootPart.Position+Vector3.new(0,500,0))
 		local destination = vehicle.Engine.Position;
 		local finish = false;
@@ -104,10 +113,10 @@ function module.Teleport(position)
 			task.wait(1)
 			game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game);task.wait();
 			game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.Space,false,game)
-			
+
 			task.wait()
-			
-			player.Character:MoveTo(vehicle.Engine.Position+vehicle.Engine.CFrame.RightVector*-4)
+
+			player.Character:MoveTo(vehicle.Seat.Position+vehicle.Seat.CFrame.RightVector*-4)
 			task.wait()
 			workspace.CurrentCamera.CFrame = CFrame.lookAt(workspace.CurrentCamera.CFrame.Position, vehicle.Engine.Position)
 			for i = 1, 10 do
